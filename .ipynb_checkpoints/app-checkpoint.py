@@ -144,12 +144,6 @@ class Form(FlaskForm):
 @server.route('/', methods=['GET', 'POST'])
 def index():        
     
-    ### Clear out Images
-    dir_name = "static/images/"
-    for item in os.listdir(dir_name):
-        if item.endswith(".png"):
-            os.remove(os.path.join(dir_name, item))
-    
     form = Form()    
     alaska_cities = data[data['State']=='Alabama']['City']
     form.city.choices = [ (city, index) for city, index in zip(alaska_cities.index, alaska_cities) ]
