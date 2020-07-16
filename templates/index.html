@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .row {
+        text-align: center;
+    }
+    .slider {
+        width: 100%;
+    }
+    .check {
+        align-content: center;
+    }
+</style>
+
+<script>
+    
+    function change_input(element) {
+        let name = element.id.replace("_slider", "");
+        let input_ = document.getElementById(name);
+        input_.value = element.value;
+    }
+    
+    function disable_forms(element) {
+        
+        let input_name = element.id.replace("_check", "");
+        let slider_name = element.id.replace("_check", "_slider");
+        let input_ = document.getElementById(input_name);
+        let slider_ = document.getElementById(slider_name);
+
+        if (element.checked == true) {
+            //add disabled
+            input_.readOnly = true;
+            input_.value = 9999999999;
+            input_.style.backgroundColor = "Black";
+            slider_.disabled = true;
+        } else {
+            //remove it
+            input_.readOnly = false;
+            input_.value = 0;
+            input_.style.backgroundColor = "";
+            slider_.disabled = false;
+            slider_.value = 0;
+        }        
+    }
+    
+    function toggle() {
+        var event = new Event('change');
+        $('input[changeAll="toggleall"]').each(function() {
+            if (this.checked == true) {
+                this.checked = false;
+                this.dispatchEvent(event);
+            } else {
+                this.checked = true;
+                this.dispatchEvent(event);
+            }
+        });    
+    }
+    
+    function random_ranges() {
+        var event = new Event('change');
+        
+        $('input[type="range"]').each(function() {
+            
+            let checkbox_name = this.id.replace("_slider", "_check");
+            let checkbox = document.getElementById(checkbox_name);
+            
+            if (checkbox.checked == false) {
+                let min = this.min;
+                let max = this.max;
+                let new_value = (Math.random() * ((max - min) + 1)) + min;
+                this.value = new_value;          
+                change_input(this);
+            }
+        });    
+    }
+    </script>
+
+<!-- Masthead -->
+<header class="masthead text-white text-center">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="jumbotron bg-secondary">
+            <div class="row">
+                <div class="col-xl-9 mx-auto">
+                    <h1 class="mb-5">Enter a State and City to find the most similar Cities in America</h1>
+                </div>
+                <div class="col-md-10 mx-auto">
+                    <form method="POST">
+                        <div class="form-row">
+                            <div class=" col-md-4">
+                                {{ form.csrf_token }}
+                                {{ form.state(class_="form-control form-control-lg", onchange="on_state_change()") }}
+                            </div>
+                            <div class="col-md-5">
+                                {{ form.city(class_="form-control form-control-lg") }}
+                            </div>
+                            <div class="col-md-3">
+                                <input type="submit" class="btn btn-block btn-lg btn-primary" value="Search", name="state_search">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-block btn-lg btn-light" onclick="getOption()">Random</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<br>
+
+<div class="container align-self-center text-center">
+    <h2>Choose Your Ideal City</h2>
+    <p>Fill out the forms below and the algorithm will choose the closest matches in the United States</p>
+</div>
+
+<br><br><br>
+
+<div class="container align-self-center center-text flex">
+    
+    <div class="row justify-content-around">
+        <div class="col-md-5">
+            <button class="btn btn-block btn-lg btn-primary" onclick="random_ranges()" id="rrand_button">Select All Random Inputs</button>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-5">
+            <button class="btn btn-block btn-lg btn-primary" onclick="toggle()" id="toggle_button">Toggle All Buttons</button>
+        </div>
+    </div>
+    <br>
+    
+    <form method="POST">
+        
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+                <th class="col-md-">Item</th>
+                <th class="col-md-">Input</th>
+                <th class="col-md-">Slider</th>
+                <th class="col-md-">Remove?</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for field in form %} 
+              
+                <tr ng-repeat="name in getdrugnameNewArray">
+                    
+                    {% if field.name not in ['state','city','csrf_token'] %}
+                        
+                        {% if field.name in ['population'] %}
+
+                            <td><strong>{{ field.label }}</strong></td>
+                            <td>{{ field }}</td>
+                            <td><input type="range" min="1" max="2000000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
+                            <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}"  onchange="disable_forms(this)" changeAll="toggleall"></td>
+                    
+                        {% elif field.name in ['income'] %}
+                            
+                            <td><strong>{{ field.label }}</strong></td>
+                            <td>{{ field }}</td>
+                            <td><input type="range" min="1" max="250000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
+                            <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
+                    
+                        {% elif field.name in ['rent'] %}
+
+                            <td><strong>{{ field.label }}</strong></td>
+                            <td>{{ field }}</td>
+                            <td><input type="range" min="1" max="3000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
+                            <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
+
+                        {% elif field.name in ['home_value'] %}
+
+                            <td><strong>{{ field.label }}</strong></td>
+                            <td>{{ field }}</td>
+                            <td><input type="range" min="10000" max="800000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
+                            <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
+
+                        {% else %}
+
+                            <td><strong>{{ field.label }}</strong></td>
+                            <td>{{ field }}</td>
+                            <td><input type="range" min="1" max="100" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
+                            <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
+                    
+                        {% endif %}
+                        
+                    {% endif %}
+
+                </tr>
+              
+              {% endfor %}      
+          </tbody>
+        </table>
+        
+        <div>
+            <input type="submit" class="btn btn-block btn-lg btn-primary" value="Find", name="user_form">
+        </div>
+        
+    </form>
+</div>
+
+<br><br><br><br><br><br><br><br>
+
+<!-- Footer -->
+<footer class="footer bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+                <ul class="list-inline mb-2">
+                <li class="list-inline-item">
+                    <a href="/about">About</a>
+                </li>
+                <li class="list-inline-item">&sdot;</li>
+                <li class="list-inline-item">
+                    <a href="/contact">Made by Callan Mix</a>
+                </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/Callanmix" target="_blank">
+                            <i class="fab fa-github fa-2x fa-fw"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="www.linkedin.com/in/callan-mix">
+                            <i class="fab fa-linkedin fa-2x fa-fw"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    
+    function on_state_change() {
+        let state_select = document.getElementById('state');
+        let city_select = document.getElementById('city');
+
+        state = state_select.value;
+
+        fetch('/city/' + state).then(function(response){
+
+           response.json().then(function(data){
+               console.log(data)
+               let optionHTML = '';
+
+               for (let city of data.cities) {
+                   optionHTML += '<option value="' + city.index + '">' + city.name + '</option>';
+               }
+
+               city_select.innerHTML = optionHTML;
+
+           }); 
+        });
+    }
+    
+    function getOption() { 
+        change_state();
+        on_state_change();
+        change_city();        
+    } 
+    
+    function change_city() {
+        let city_selector = document.getElementById('city');
+        let cities = $('#city > option').map(function() {return this.value;}).get();
+        let rand_city = cities[Math.floor(Math.random() * cities.length)];
+        city_selector.value = rand_city;
+
+    }
+    function change_state() { 
+        let state_selector = document.getElementById('state');
+        let states = $('#state > option').map(function() {return this.value;}).get();
+        let rand_state = states[Math.floor(Math.random() * states.length)];
+        $('#state').val(rand_state);
+    } 
+    
+</script>
+
+{% endblock %}
+    

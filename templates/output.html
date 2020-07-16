@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .table-responsive{
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        border: 1px solid #ddd;
+    }    
+</style>
+
+<br><br>
+
+<div class="container" style="text-align: center">
+    <div class="jumbotron jumbotron-fluid rounded">
+        <h2>Closest Matching Cities To:</h2>
+        <h4>{{ df.iloc[[0]]["City"][0] }}, {{ df.iloc[[0]]["State"][0] }}</h4>
+    </div>
+</div>
+
+<div class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                {% for x in df.iterrows() %} 
+                    {% if loop.index0 != 0 %}
+                        <p>{{ loop.index0 }} - - {{ x[1]['City'] }}, {{ x[1]['State'] }} </p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<br><br><br><br><br><br><br><br>
+
+<div class="container">
+    <div>
+        <h3 style="text-align: center">Results Data Table</h3>
+    </div>
+    <!--      Table         --> 
+    <div class="container">
+        <div class="table-responsive">
+            {{data | safe}}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+    
