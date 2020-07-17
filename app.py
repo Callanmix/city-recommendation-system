@@ -40,7 +40,7 @@ def prepare_data(data, user_input):
     y = pd.DataFrame(user_input.drop(drop_list).dropna()).T
     x = data[y.columns].dropna()
 
-    scaler = preprocessing.StandardScaler()
+    scaler = StandardScaler()
     x = pd.DataFrame(scaler.fit_transform(x), columns = x.columns).set_index(x.index)
     y = pd.DataFrame(scaler.transform(y), columns = y.columns).set_index(y.index)
     return x, y
