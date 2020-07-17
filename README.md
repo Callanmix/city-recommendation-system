@@ -1,0 +1,74 @@
+# <a href="https://find-your-city.herokuapp.com/" target="_blank">Find Your City</a>
+
+<!-- First -->
+
+<h1>Introduction</h1>
+<h5 class="">This project takes a user input of city information and uses the average of multiple distance measurements to find the most similar cities in America</h5>
+
+<p class="">The data was scraped from <a href="https://www.citytowninfo.com/places" target="_blank">City Town Info</a>. It is not the most complete data set with multiple states only including data from one city. However, through a python script, I was able to get fairly complete data on over 17 thousand US cities. From that data, I wanted a user to either choose an exsisting city or input features that they would like from a city and have a recommendation made for places like that. The end product is a user friendly experience that I am satisfied with.</p>
+
+<p>It is an interesting project right now beacuse of the amount of people that have lost jobs and need to relocate or that have come to enjoy remote work and want to relocate.</p>
+
+
+<hr/>
+
+<!-- Second -->
+
+<h1>Data Preparation</h1>
+<h5 class="">Using a python script, I scraped data from <a href="https://www.citytowninfo.com/places" target="_blank">City Town Info</a> for over 17,000 US cities</h5>
+
+<p class="">At first I wanted to find the right dataset online that was cleaned and ready to go. I wanted demographic and local information on a city to city basis. This proved harder to find than I thought. Many sites offered close to what I was looking for, but at a steep price ($500 +). Being a college student, I could not afford something like that, so I started to look at websites that offered that info. <a href="https://www.citytowninfo.com/places" target="_blank">City Town Info</a> offered a lot of data, and seemed plausable to scrape.</p>
+
+<p>The data came in all as text. I cleaned up the html text, and converted everything to its proper string, integer, or float. This I then broke out to proper rows and columns so the data was tidy. I then ran through some feature selection and choose the top 20 most important features down from ~80.</p>
+
+
+
+<hr/>
+
+
+
+<h1>Mining / Learning from the Data</h1>
+<h5 class="">From the start I knew that the most obvious way to make recommedations with this dataset was K-Nearest Neighbors, but the normal, off-the-shelf packages would not work in my case</h5>
+
+<p class="">My recommendation problem was almost inbetween supervised and unsupervised learning. I had ordered data, but was not predicting a label. I just needed a distance measurement like in K-Nearest Neighbors. With some advice and google, I found that the spacy package in python has prebuilt distance measurements. My approach is to use three of the most popular: <a href="https://en.wikipedia.org/wiki/Euclidean_distance#:~:text=In%20mathematics%2C%20the%20Euclidean%20distance,metric%20as%20the%20Pythagorean%20metric." target="_blank">Euclidean Distance</a>, <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">Manhattan Distance</a>, and <a href="https://en.wikipedia.org/wiki/Chebyshev_distance#:~:text=In%20mathematics%2C%20Chebyshev%20distance%20(or,is%20named%20after%20Pafnuty%20Chebyshev." target="_blank">Chebyshev Distance</a>.</p>
+
+
+<pre class="codebox">
+<code>euclidean = scipy.spatial.distance.cdist(data, obs, metric='euclidean')
+manhattan = scipy.spatial.distance.cdist(data, obs, metric='cityblock')
+chebyshev = scipy.spatial.distance.cdist(data, obs, metric='chebyshev')
+
+combined = (euclidean + manhattan + chebyshev) / 3</code>
+</pre>
+
+<p>By finding the distance between the user input and all other point in the dataset with each method, I could take an average of the three and then find the n closest points. There may be better ways to go about it, but this was the best solution I could find; to implement my own version of Nearest Neighbors.</p>
+
+
+
+<hr/>
+
+<h1>Results</h1>
+<h5 class="">The result is the app</h5>
+<a href="https://find-your-city.herokuapp.com/" target="_blank">Try it Out</a>
+
+
+
+<hr/>
+
+
+<h1>Conclusions</h1>
+<h5 class="">With data that I have access to, the final result work great</h5>
+
+<p class="">There are some limitations with this project. First, the data that we are using was collected from an incomplete source. Many states are missing many cities and city data. This means that those few states are going to be under represented. However, there is data for every state and every type of city (i.e. old/young, large/small, rich/poor). Second is a problem with our comparison algorithm. The main problem with Nearest Neighbors is <a ref="https://en.wikipedia.org/wiki/Curse_of_dimensionality#:~:text=The%20curse%20of%20dimensionality%20refers,was%20coined%20by%20Richard%20E." target="_blank">the curse of dementionality</a>. This means the more features we include when calculating distance, the more difficult it is to have confidence in the results. This is why I included a way to compare only one ideal feature in the app.</p>
+
+<p>Overall, this project was a success. The recommendation system works and can handle many different situations. It is interesting to see what cities have in common. Take note as you try out the app.</p>
+
+<hr/>
+
+
+
+<h1>Lessons Learned</h1>
+<h5 class="">My two main takaways are from data integrity and displaying results</h5>
+
+<p class="">If I were to start this project over, I would spend more time trying to find more complete data. I did not do my due diligence in making sure all the data was there. By the time I realized some states were missing many cities, I was deep into the project. The data that we use in machine learning is the output. This means that if the data in missing or incomplete, we will have a baised output. My other change would be to make an output that you can connect with. My output doesn't make me do anything. Presenting findings is just as important as the findings. The presentation is what leads to action.</p>
+
