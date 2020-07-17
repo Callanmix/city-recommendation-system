@@ -22,6 +22,12 @@
         input_.value = element.value;
     }
     
+    function change_slider(element) {
+        let name = element.id + "_slider";
+        let slider = document.getElementById(name);
+        slider.value = element.value;
+    }
+    
     function disable_forms(element) {
         
         let input_name = element.id.replace("_check", "");
@@ -58,9 +64,7 @@
         });    
     }
     
-    function random_ranges() {
-        var event = new Event('change');
-        
+    function random_ranges() {        
         $('input[type="range"]').each(function() {
             
             let checkbox_name = this.id.replace("_slider", "_check");
@@ -75,6 +79,7 @@
             }
         });    
     }
+    
     </script>
 
 <!-- Masthead -->
@@ -113,29 +118,150 @@
 <br>
 
 <div class="container align-self-center text-center">
-    <h2>Choose Your Ideal City</h2>
-    <p>Fill out the forms below and the algorithm will choose the closest matches in the United States</p>
+    <div class="row">
+        <div class="col">
+            <h2>Choose Your Ideal City</h2>
+            <p>Fill out the forms below and the algorithm will choose the closest matching cities in the United States</p>
+            <small>Click the Info Button to Learn More</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="col align-self-center text-center">
+                <a href="" data-toggle="modal" data-target="#exampleModalLong"><i class="fa fa-info-circle fa-7x" aria-hidden="true"></i></a>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">How-To</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+                
+              <div class="modal-body">
+                  <div class="container-fluid">
+                      <h1>How to Use This App</h1><br>
+                      
+                      <div class="row">
+                          <div class="col">
+                            <h3>What's the Point?</h3>
+                            <h5 class="">Based on what you choose, you will get a list of the most similar cities</h5>
+                            <p>This app is designed to help a person find a great city. We all have things that we want when it comes to a place to live (i.e. affordable housing, comfortable population, nice weather). Using machine learning, you can find your ideal place to live based off what you already like. Simply enter the information you like and search. It's that easy.</p>
+                        </div>
+                      </div>
+                      <div class="space" style="padding-top: 20px;"> </div>
+                      <hr>
+                      <div class="space" style="padding-top: 20px;"> </div>
+                      
+                      <br><h4>Two Ways to Find</h4><br>
+                      
+                      <div class="row text-left">
+                          <div class="col-md-8">
+                            <h3>Choose Your City</h3>
+                            <h5 class="">Pick a City and State from Dropdown Lists</h5>
+                            <p>One way to find the perfect city is to start from one you already love. Simply choose the state and the city from the dropdown lists and click search. That's all it takes. If you are not sure of a city, you can press the Random button. This picks a random city-state combination for you to explore. Please keep in mind that not every US city is available. For more information on limitations, please visit the <a href="/about">about page</a>.</p>
+                        </div>
+                        <div class="col-md-4 align-self-center text-center">
+                            <i class="fa fa-globe fa-7x" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                      <div class="space" style="padding-top: 20px;"> </div>
+                      <div class="row text-left">
+                          <div class="col-md-8">
+                              <h3>Make Your City</h3>
+                              <h5 class="">Input your Ideal Features Using the Table</h5>
+                              <p>You may ask, "What if I already know what makes up a perfect city for me?". Well you are in luck! Using the form, you may input any number of ideal features and find the closest city to that. That means you can use all features or just one. Keep in mind that the more features you add the less precise the algorithm will be. For best results choose between 3-6 features to search on.</p>
+                              <p>For your convenience, there are several buttons for your to use</p>
+                              
+                              <ul class="list-group text-center">
+                                  <li class="list-group-item">
+                                      <div class="row">
+                                          <div class="col">
+                                              <p><button class="btn btn-block btn-lg btn-primary">Use State, City Input</button></p>
+                                          </div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col">
+                                              <p>Pressing this will autofill all of the inputs with the data from the current selection in the first part. This is useful if you have a city in mind that you really like, but would like to leave a few portions out of the calculations or adjust the values to something more ideal.</p>
+                                          </div>
+                                      </div>
+                                  </li>
+                                  <li class="list-group-item">
+                                      <div class="row">
+                                          <div class="col">
+                                              <p><button class="btn btn-block btn-lg btn-primary">Select All Random Inputs</button></p>
+                                          </div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col">
+                                              <p>This will randomly input values in all ranges. Can be usful for experimenting to find your perfect combination.</p>
+                                          </div>
+                                      </div>
+                                  </li>
+                                  <li class="list-group-item">
+                                      <div class="row">
+                                          <div class="col">
+                                              <p><button class="btn btn-block btn-lg btn-primary">Toggel All Buttons</button></p>
+                                          </div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col">
+                                              <p>The remove column excludes the corrisponding feature from the calculations. This means that it will not be considered when searching for a matching city. The toggle button clicks all of the checkboxes. Everytime a box is clicked it sets the number down to zero. You can use the other two buttons to change inputs that have not been removed.</p>
+                                          </div>
+                                      </div>
+                                  </li>
+                              </ul>
+                        </div>
+                        <div class="col-md-4 align-self-center text-center">
+                            <i class="fa fa-wrench fa-7x" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="space" style="padding-top: 80px;"> </div>
+                      <div class="row">
+                          <div class="col">
+                            <h5 class="">Please Enjoy</h5>
+                            <small>There may be problems or errors that did not come out in testing. Feel free to <a href="/contact">contact me</a></small>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<br><br><br>
+<div class="space" style="padding-top: 40px;"> </div>
 
 <div class="container align-self-center center-text flex">
     
     <div class="row justify-content-around">
-        <div class="col-md-5">
+        <div class="col-md-4">
+            <button class="btn btn-block btn-lg btn-primary" onclick="city_state_input()" id="on">Use State, City Input</button>
+        </div>
+        <div class="col-md-4">
             <button class="btn btn-block btn-lg btn-primary" onclick="random_ranges()" id="rrand_button">Select All Random Inputs</button>
         </div>
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-5">
+        <div class="col-md-4">
             <button class="btn btn-block btn-lg btn-primary" onclick="toggle()" id="toggle_button">Toggle All Buttons</button>
         </div>
     </div>
     <br>
     
-    <form method="POST">
+    <form method="POST", id="user_input_form">
         
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered table-hover" id="input_table">
           <thead>
             <tr>
                 <th class="col-md-">Item</th>
@@ -154,35 +280,35 @@
                         {% if field.name in ['population'] %}
 
                             <td><strong>{{ field.label }}</strong></td>
-                            <td>{{ field }}</td>
+                            <td>{{ field(oninput = "change_slider(this)") }}</td>
                             <td><input type="range" min="1" max="2000000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
                             <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}"  onchange="disable_forms(this)" changeAll="toggleall"></td>
                     
                         {% elif field.name in ['income'] %}
                             
                             <td><strong>{{ field.label }}</strong></td>
-                            <td>{{ field }}</td>
+                            <td>{{ field(oninput = "change_slider(this)") }}</td>
                             <td><input type="range" min="1" max="250000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
                             <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
                     
                         {% elif field.name in ['rent'] %}
 
                             <td><strong>{{ field.label }}</strong></td>
-                            <td>{{ field }}</td>
+                            <td>{{ field(oninput = "change_slider(this)") }}</td>
                             <td><input type="range" min="1" max="3000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
                             <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
 
                         {% elif field.name in ['home_value'] %}
 
                             <td><strong>{{ field.label }}</strong></td>
-                            <td>{{ field }}</td>
+                            <td>{{ field(oninput = "change_slider(this)") }}</td>
                             <td><input type="range" min="10000" max="800000" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
                             <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
 
                         {% else %}
 
                             <td><strong>{{ field.label }}</strong></td>
-                            <td>{{ field }}</td>
+                            <td>{{ field(oninput = "change_slider(this)") }}</td>
                             <td><input type="range" min="1" max="100" value="{{ field.data }}" class="slider" id="{{ field.name + '_slider' }}" oninput ="change_input(this)"></td>
                             <td><input type="checkbox" class="check" id="{{ field.name + '_check' }}" onchange ="disable_forms(this)" changeAll="toggleall"></td>
                     
@@ -197,13 +323,13 @@
         </table>
         
         <div>
-            <input type="submit" class="btn btn-block btn-lg btn-primary" value="Find", name="user_form">
+            <input type="submit" class="btn btn-block btn-lg btn-primary" value="Find", name="user_form", id="user_form">
         </div>
         
     </form>
 </div>
 
-<br><br><br><br><br><br><br><br>
+<div class="space" style="padding-top: 300px;"> </div>
 
 <!-- Footer -->
 <footer class="footer bg-light">
@@ -250,7 +376,6 @@
         fetch('/city/' + state).then(function(response){
 
            response.json().then(function(data){
-               console.log(data)
                let optionHTML = '';
 
                for (let city of data.cities) {
@@ -263,25 +388,47 @@
         });
     }
     
-    function getOption() { 
-        change_state();
-        on_state_change();
-        change_city();        
-    } 
-    
-    function change_city() {
-        let city_selector = document.getElementById('city');
-        let cities = $('#city > option').map(function() {return this.value;}).get();
-        let rand_city = cities[Math.floor(Math.random() * cities.length)];
-        city_selector.value = rand_city;
+    function city_state_input() {
+        let city_select = document.getElementById('city');
+        var event = new Event('input');
+        city = city_select.value;
 
+        fetch('get/' + city).then(function(response){
+           response.json().then(function(data){
+               var result = [];
+               
+               for (var key in data) {
+                   if (data.hasOwnProperty(key)) {
+                       result.push(data[key]);
+                   }
+               }                
+               var elements = document.querySelectorAll('#input_table input[type=text]')
+               
+               for (var i = 0, element; element = elements[i++];) {
+                   let checkbox_name = element.id + "_check";
+                   let checkbox = document.getElementById(checkbox_name);
+                   if (checkbox.checked == false) {    
+                       element.value = result[i-1]
+                       element.dispatchEvent(event);
+                   }
+               }
+           }); 
+        });
     }
-    function change_state() { 
+    
+    function getOption() { 
         let state_selector = document.getElementById('state');
         let states = $('#state > option').map(function() {return this.value;}).get();
         let rand_state = states[Math.floor(Math.random() * states.length)];
         $('#state').val(rand_state);
+        
+        var select = document.getElementById('city');
+        var items = select.getElementsByTagName('option');
+        var index = Math.floor(Math.random() * items.length);
+        select.selectedIndex = index;
     } 
+    
+
     
 </script>
 

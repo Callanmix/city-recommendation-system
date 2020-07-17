@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import random, time, scipy, os, json
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 
 
 data = pd.read_csv('static/data/all_city_data_clean.csv').dropna(subset=['City']).reset_index(drop=True)
@@ -41,7 +40,7 @@ def prepare_data(data, user_input):
     y = pd.DataFrame(user_input.drop(drop_list).dropna()).T
     x = data[y.columns].dropna()
 
-    scaler = StandardScaler()
+    scaler = preprocessing.StandardScaler()
     x = pd.DataFrame(scaler.fit_transform(x), columns = x.columns).set_index(x.index)
     y = pd.DataFrame(scaler.transform(y), columns = y.columns).set_index(y.index)
     return x, y
@@ -70,14 +69,19 @@ def nearest_neighbors(data, obs, orignal_data, n = 5, fake_data = False, origina
         chebyshev = scipy.spatial.distance.cdist(data, obs, metric='chebyshev')
 
         combined = (euclidean + manhattan + chebyshev) / 3     
-        indices = [ data[ combined == Sort( combined )[i] ].index for i in range(n) ]
+        combined_sort = Sort( combined )[:n]
+        indices = [ data[ combined == combined_sort[i] ].index for i in range(n) ]
 
         df = orignal_data.loc[ [ str( index[0] ) for index in indices ], : ]
         column_order = df.columns
         df = pd.concat([original_obs, df[:]])
-        
         df = df[column_order]
-    
+        
+        combined_sort =  np.insert(combined_sort, 0, 0.00, axis=0)
+        df['Computed Distance'] = [np.round(i[0], 2) for i in combined_sort]
+        
+        return df
+           
     else:
         
         euclidean = scipy.spatial.distance.cdist(data, obs, metric='euclidean')
@@ -85,10 +89,13 @@ def nearest_neighbors(data, obs, orignal_data, n = 5, fake_data = False, origina
         chebyshev = scipy.spatial.distance.cdist(data, obs, metric='chebyshev')
 
         combined = (euclidean + manhattan + chebyshev) / 3     
-        indices = [ data[ combined == Sort( combined )[i] ].index for i in range(n) ]
+        combined_sort = Sort( combined )[:n]
+        indices = [ data[ combined == combined_sort[i] ].index for i in range(n) ]
 
         df = orignal_data.loc[ [ str( index[0] ) for index in indices ], : ]
         df.rename(index={'0':'value'}, inplace = True)
+        
+        df['Computed Distance'] = [np.round(i[0], 2) for i in combined_sort]
           
     return df
 
@@ -102,8 +109,23 @@ SECRET_KEY = os.urandom(32)
 server.config['SECRET_KEY'] = SECRET_KEY
 
 data_columns = ['Total Population','% Male','Employed Population %','Age of the Population','% of people married','Population % with Bachelor Degree or Higher',
-'Median Family Income','% Below Poverty Level','Average Commute Time','Single People','Median Gross Rent',
-'Median House Value','Annual Precip','Summer High','Winter Low']
+'Median Family Income','% Below Poverty Level','Average Commute Time','Single People','Median Gross Rent','Median House Value','Annual Precip','Summer High','Winter Low']
+
+us_state_abbrev = {
+    'Alabama': 'AL','Alaska': 'AK','American Samoa': 'AS','Arizona': 'AZ','Arkansas': 'AR','California': 'CA','Colorado': 'CO','Connecticut': 'CT',
+    'Delaware': 'DE', 'District of Columbia': 'DC', 'Florida': 'FL', 'Georgia': 'GA', 'Guam': 'GU', 'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL',
+    'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS', 'Kentucky': 'KY','Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD','Massachusetts': 'MA','Michigan': 'MI',
+    'Minnesota': 'MN', 'Mississippi': 'MS','Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
+    'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Northern Mariana Islands':'MP', 'Ohio': 'OH', 'Oklahoma': 'OK',
+    'Oregon': 'OR', 'Pennsylvania': 'PA', 'Puerto Rico': 'PR', 'Rhode Island': 'RI', 'South Carolina': 'SC', 'South Dakota': 'SD', 'Tennessee': 'TN',
+    'Texas': 'TX',  'Utah': 'UT', 'Vermont': 'VT', 'Virgin Islands': 'VI', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI','Wyoming': 'WY'
+}
+
+format_dict = {'Total Population':'{:,}','% Male':'{: .1%}','Employed Population %':'{: .1%}','Age of the Population':'{:.0f}','% of people married':'{: .1%}',
+ 'Population % with Bachelor Degree or Higher':'{: .1%}','Median Family Income':'${:,}','% Below Poverty Level':'{: .1%}', 'Approximate Latitude':'{:.2f}','Approximate Longitude':'{:.2f}',
+ 'Average Commute Time':'{:,}','Single People':'{: .1%}','Median Gross Rent':'${:,}','Median House Value':'${:,}','Annual Precip':'{:,}','Summer High':'{:,.0f}','Winter Low':'{:,.0f}'}
+
+renamed_columns_list = ['Your Choice','Most Similar','2nd','3rd','4th','5th', '6th', '7th', '8th', '9th', '10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th']
 
 # form for the show entry
 class Form(FlaskForm):
@@ -155,16 +177,15 @@ def index():
             
             user_choice = data.loc[ str(form.city.data), : ]
             x, y = prepare_data(data, user_choice)
-            df = nearest_neighbors(data=x, obs=y, orignal_data=data, n = 6)
+            df = nearest_neighbors(data=x, obs=y, orignal_data=data, n = 21)
             
-            trans_data = df.T
-            trans_data.columns = ['Your Choice','Most Similar','2nd','3rd','4th','5th']
+            trans_data = pd.read_html(df.reset_index(drop=True).style.format(format_dict, na_rep="-").render())[0].drop(['Unnamed: 0'], axis=1).T
+            trans_data.columns = renamed_columns_list[:21]
             
-            format_dict = {'Total Population': '{:,}', '% Male': '{:.2%}', 'Employed Population %': '{:.2%}', '% of people married': '{:.2%}',
-               'Population % with Bachelor Degree or Higher':'{:.2%}', 'Median Family Income':'${0:,.0f}','% Below Poverty Level': '{:.2%}', 'Single People': '{:.2%}',
-               'Median Gross Rent':'${0:,.0f}', 'Median House Value':'${0:,.0f}', 'Annual Precip': '{:.1f}'}
+            df = pd.merge(df, pd.DataFrame([(state, abbr) for state, abbr in zip(us_state_abbrev.keys(), us_state_abbrev.values())], columns = ['State', 'State_abbr']))
+            df = df.sort_values('Computed Distance')
             
-            return render_template('output.html', data=trans_data.to_html(classes='table table-hover table-dark', header="true"), df=df)   
+            return render_template('output.html', data=trans_data.to_html(classes='table table-hover table-sm', header="true", border = 0), df=df)   
         
         # User Choice of Ideal City Features
         elif 'user_form' in request.form:
@@ -196,12 +217,15 @@ def index():
                     user_choice[col] = user_choice[col] / 100
             
             x, y = prepare_data(data, user_choice.T)
-            df = nearest_neighbors(data=x, obs=y, orignal_data=data, n = 5, fake_data=True, original_obs = user_choice)
+            df = nearest_neighbors(data=x, obs=y, orignal_data=data, n = 20, fake_data=True, original_obs = user_choice)
             
-            trans_data = df.T
-            trans_data.columns = ['Your Choice','Most Similar','2nd','3rd','4th','5th']
+            trans_data = pd.read_html(df.reset_index(drop=True).style.format(format_dict, na_rep="-").render())[0].drop(['Unnamed: 0'], axis=1).T
+            trans_data.columns = renamed_columns_list[:21]
             
-            return render_template('output.html', data=trans_data.to_html(classes='table table-hover table-dark', header="true"), df=df)        
+            df = pd.merge(df, pd.DataFrame([(state, abbr) for state, abbr in zip(us_state_abbrev.keys(), us_state_abbrev.values())], columns = ['State', 'State_abbr']), how = 'left')
+            df = df.sort_values('Computed Distance')
+
+            return render_template('output.html', data=trans_data.to_html(classes='table table-hover table-sm', header="true", border = 0), df=df)        
         
     return render_template('index.html', form = form,
                            states = list(data['State'].unique()),
@@ -229,6 +253,15 @@ def city(state):
         city_array.append(cityobj)
     
     return jsonify({'cities':city_array})
+
+@server.route('/get/<city>')
+def city_data(city):
+    city = data.loc[[city,"0"],:]  
+    for col in city.columns:
+                if col in ['% Male', 'Employed Population %','% of people married','Population % with Bachelor Degree or Higher','% Below Poverty Level', 'Single People']:
+                    city[col] = city[col] * 100
+    city = city.iloc[0]
+    return city[data_columns].to_json()
 
 if __name__ == '__main__':
     server.run(use_reloader = False, debug=True)

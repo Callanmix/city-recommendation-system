@@ -8,7 +8,11 @@
         overflow-y: hidden;
         -ms-overflow-style: -ms-autohiding-scrollbar;
         border: 1px solid #ddd;
-    }    
+    }   
+    
+    .hidden {
+      display: none;
+    }
 </style>
 
 <br><br>
@@ -22,21 +26,40 @@
 
 <div class="container">
     <div class="container">
-        <div class="row">
-            <div class="col">
-                {% for x in df.iterrows() %} 
+        <table class="table table-bordered table-hover auto-collapse" id="results_table">
+            <thead class="thead-light">
+                <tr>
+                    <th class="col-md-">City</th>
+                    <th class="col-md-">State</th>
+                    <th class="col-md-">Distance Measurement</th>
+                    <th class="col-md-">Zillow Home Listings</th>
+                    <th class="col-md-">Google Maps</th>
+                    <th class="col-md-">Wikipedia Entries</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for x in df.iterrows() %} 
+                <tr class="hidden">
                     {% if loop.index0 != 0 %}
-                        <p>{{ loop.index0 }} - - {{ x[1]['City'] }}, {{ x[1]['State'] }} </p>
+                    <td><strong>{{ x[1]['City'] }}</strong></td>
+                    <td><strong>{{ x[1]['State'] }}</strong></td>
+                    <td><strong>{{ x[1]['Computed Distance'] }}</strong></td>
+                    <td><strong><a href="https://www.zillow.com/homes/{{ x[1]['City'] }},-{{ x[1]['State_abbr'] }}_rb/" target="_blank">Zillow</a></strong></td>
+                    <td><strong><a href="https://www.google.com/maps/place/{{ x[1]['City'] }},+{{ x[1]['State_abbr'] }}/" target="_blank">Google Maps</a></strong></td>
+                    <td><strong><a href="https://en.wikipedia.org/wiki/{{ x[1]['City'] }}, {{ x[1]['State'] }}" target="_blank">Wikipedia</a></strong></td>
                     {% endif %}
-                {% endfor %}
-            </div>
-        </div>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-block btn-lg btn-primary" id="display">Show More Matches</button>
     </div>
 </div>
 
 
 
-<br><br><br><br><br><br><br><br>
+<div class="space" style="padding-top: 400px;"> </div>
 
 <div class="container">
     <div>
@@ -49,6 +72,23 @@
         </div>
     </div>
 </div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function() {
+        $('#results_table .hidden').slice(0, 6).removeClass('hidden');
+    });
+    
+    $("#display").click(function() {
+        $('#results_table .hidden').slice(0, 6).removeClass('hidden');
+        if ($('#results_table .hidden').length == 0) {
+            $(this).addClass('hidden');
+        }
+    });
+
+</script>
 
 {% endblock %}
     
