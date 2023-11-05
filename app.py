@@ -179,7 +179,7 @@ def index():
             x, y = prepare_data(data, user_choice)
             df = nearest_neighbors(data=x, obs=y, orignal_data=data, n = 21)
             
-            trans_data = pd.read_html(df.reset_index(drop=True).style.format(format_dict, na_rep="-").render())[0].drop(['Unnamed: 0'], axis=1).T
+            trans_data = pd.read_html(df.reset_index(drop=True).style.format(format_dict, na_rep="-").to_html())[0].drop(['Unnamed: 0'], axis=1).T
             trans_data.columns = renamed_columns_list[:21]
             
             df = pd.merge(df, pd.DataFrame([(state, abbr) for state, abbr in zip(us_state_abbrev.keys(), us_state_abbrev.values())], columns = ['State', 'State_abbr']))
@@ -219,7 +219,7 @@ def index():
             x, y = prepare_data(data, user_choice.T)
             df = nearest_neighbors(data=x, obs=y, orignal_data=data, n = 20, fake_data=True, original_obs = user_choice)
             
-            trans_data = pd.read_html(df.reset_index(drop=True).style.format(format_dict, na_rep="-").render())[0].drop(['Unnamed: 0'], axis=1).T
+            trans_data = pd.read_html(df.reset_index(drop=True).style.format(format_dict, na_rep="-").to_html())[0].drop(['Unnamed: 0'], axis=1).T
             trans_data.columns = renamed_columns_list[:21]
             
             df = pd.merge(df, pd.DataFrame([(state, abbr) for state, abbr in zip(us_state_abbrev.keys(), us_state_abbrev.values())], columns = ['State', 'State_abbr']), how = 'left')
