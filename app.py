@@ -100,12 +100,12 @@ def nearest_neighbors(data, obs, orignal_data, n = 5, fake_data = False, origina
     return df
 
 # Init the flask 
-server = Flask(__name__,
+app = Flask(__name__,
     instance_relative_config=False,
     template_folder="templates",
     static_folder="static")
 
-server.config['SECRET_KEY'] = 'SECRET_KEY'
+app.config['SECRET_KEY'] = 'SECRET_KEY'
 
 data_columns = ['Total Population','% Male','Employed Population %','Age of the Population','% of people married','Population % with Bachelor Degree or Higher',
 'Median Family Income','% Below Poverty Level','Average Commute Time','Single People','Median Gross Rent','Median House Value','Annual Precip','Summer High','Winter Low']
@@ -162,7 +162,7 @@ class Form(FlaskForm):
     #'Winter Low'
     low = IntegerField('Average Annual Low Temp', default = int(data['Winter Low'].mean()))  
     
-@server.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():        
     
     form = Form()    
@@ -230,11 +230,11 @@ def index():
                            states = list(data['State'].unique()),
                            cities = list(data['City'].unique()))
 
-@server.route('/about', methods=['GET', 'POST'])
+@app.route('/about', methods=['GET', 'POST'])
 def about_page():  
     return render_template('about.html')
 
-@server.route('/contact', methods=['GET', 'POST'])
+@app.route('/contact', methods=['GET', 'POST'])
 def contact_page():  
     return render_template('contact.html')
 
@@ -242,7 +242,7 @@ cities = {}
 for state in list(data['State'].unique()):
     cities[state] = list(data[data['State']==state]['City'].unique())
 
-@server.route('/city/<state>')
+@app.route('/city/<state>')
 def city(state):
     cities = data[data['State']==state]['City']
     
@@ -253,7 +253,7 @@ def city(state):
     
     return jsonify({'cities':city_array})
 
-@server.route('/get/<city>')
+@app.route('/get/<city>')
 def city_data(city):
     city = data.loc[[city,"0"],:]  
     for col in city.columns:
@@ -263,4 +263,4 @@ def city_data(city):
     return city[data_columns].to_json()
 
 if __name__ == '__main__':
-    server.run(use_reloader = False)
+    app.run(use_reloader = False)
