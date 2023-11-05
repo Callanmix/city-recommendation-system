@@ -99,14 +99,13 @@ def nearest_neighbors(data, obs, orignal_data, n = 5, fake_data = False, origina
           
     return df
 
-
 # Init the flask 
 server = Flask(__name__,
+    instance_relative_config=False,
     template_folder="templates",
     static_folder="static")
 
-SECRET_KEY = os.urandom(32)
-server.config['SECRET_KEY'] = SECRET_KEY
+server.config['SECRET_KEY'] = 'SECRET_KEY'
 
 data_columns = ['Total Population','% Male','Employed Population %','Age of the Population','% of people married','Population % with Bachelor Degree or Higher',
 'Median Family Income','% Below Poverty Level','Average Commute Time','Single People','Median Gross Rent','Median House Value','Annual Precip','Summer High','Winter Low']
@@ -264,4 +263,4 @@ def city_data(city):
     return city[data_columns].to_json()
 
 if __name__ == '__main__':
-    server.run(use_reloader = False, debug=True)
+    server.run(use_reloader = False)
